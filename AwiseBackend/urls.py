@@ -19,5 +19,5 @@ from survey.api import api
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/", api.urls),
+    path("api/survey/", api.urls),
 ]
