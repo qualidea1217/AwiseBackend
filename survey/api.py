@@ -1,6 +1,7 @@
 from ninja import NinjaAPI
-from schema import SurveySchema, Error
-from models import Survey
+
+from survey.models import Survey
+from survey.schema import SurveySchema, Error
 
 api = NinjaAPI()
 
@@ -40,6 +41,6 @@ def delete_survey(request, user_id: int):
 def get_survey_or_404(user_id: int):
     try:
         survey = Survey.objects.get(user_id=user_id)
-    except:
+    except Survey.DoesNotExist:
         return 404
     return survey
