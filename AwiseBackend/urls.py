@@ -15,9 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from survey.api import api
+from survey.api import api as survey_api
+from recommender.api import api as recommender_api
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/survey/", api.urls),
+    path("api/survey/", survey_api.urls),
+    path("api/recommender", recommender_api.urls)
 ]
