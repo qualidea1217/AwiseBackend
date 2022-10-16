@@ -8,7 +8,7 @@ from recommender.algorithm import get_match_score
 api = NinjaAPI()
 
 
-@api.get("/retrieve-match-result/{user-id}", response={200: MatchResult, 404: Error})
+@api.get("/retrieve-match-result/{user_id}", response={200: MatchResult, 404: Error})
 def retrieve_base_match_result(request, user_id: int):
     current_user_info = Survey.objects.get(user_id)
     user_list = []  # TODO: retrieve all user id to get all user
