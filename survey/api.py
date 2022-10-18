@@ -1,12 +1,8 @@
 from ninja import Router
 
+from recommender.schema import Error
 from survey.models import Survey
-from survey.schema import SurveySchema, Error
-
-import numpy as np
-from recommender.models import Survey
-from recommender.schema import MatchResult, Error
-from recommender.algorithm import get_match_score
+from survey.schema import SurveySchema
 
 survey_router = Router()
 

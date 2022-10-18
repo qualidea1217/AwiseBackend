@@ -1,9 +1,9 @@
 from ninja import Router
 import numpy as np
 
-from recommender.models import Survey
+from survey.models import Survey
 from recommender.schema import MatchResult, Error
-from recommender.algorithm import get_match_score
+from recommender.baseline import get_match_score
 
 recommender_router = Router()
 
