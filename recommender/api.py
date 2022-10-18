@@ -1,14 +1,14 @@
-from ninja import NinjaAPI
+from ninja import Router
 import numpy as np
 
 from recommender.models import Survey
 from recommender.schema import MatchResult, Error
 from recommender.algorithm import get_match_score
 
-api = NinjaAPI()
+recommender_router = Router()
 
 
-@api.get("/retrieve-match-result/{user_id}", response={200: MatchResult, 404: Error})
+@recommender_router.get("/retrieve-match-result/{user_id}", response={200: MatchResult, 404: Error})
 def retrieve_base_match_result(request, user_id: int):
     current_user_info = Survey.objects.get(user_id)
     user_list = []  # TODO: retrieve all user id to get all user
@@ -18,4 +18,5 @@ def retrieve_base_match_result(request, user_id: int):
                                         user_info, np.array([1] * len(current_user_info)))
                         for user_info in user_info_list]  # TODO: add weight array
     # TODO: return the result
+    return Survey.objects.all()
 
