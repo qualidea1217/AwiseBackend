@@ -1,121 +1,66 @@
+from django.shortcuts import get_object_or_404
 from ninja import Router
 
-from recommender.schema import Error
-from survey.models import Survey_1, Survey_2
-from survey.schema import SurveySchema
+from survey.models import BasicInfo, Survey
+from survey.schema import BasicInfoSchema, SurveySchema, BasicInfoError, SurveyError
 
 survey_router = Router()
 
 
-api = NinjaAPI()
+# CRUD for basic info as a whole
+@survey_router.post("/create-basic-info")
+def create_basic_info(request, payload: BasicInfoSchema):
+    new_basic_info = BasicInfo.objects.create(**payload.dict())
+    return {"user_id": new_basic_info.id}
 
 
-class Survey1Schema(Schema):
-    is_authenticated: bool
-    user_id: str
-    user_name: str
-    email: str
-    year: int
-    rent: int
-    move_in_date: int
-    num_of_rm: int
-    location: str
-    getup_time: int
-    bed_time: int
-    
-    
+@survey_router.get("/retrieve-basic-info/{user_id}", response={200: BasicInfoSchema, 404: BasicInfoError})
+def retrieve_basic_info(request, user_id: int):
+    basic_info = get_object_or_404(BasicInfo, user_id=user_id)
+    return basic_info
 
 
-class Survey2Schema(Schema):
-    social: int
-    academic: int
-    bring_people: int
-    animal: int
-    instrument: int
-    clean: int
-    cook: int
-    share: int
-    smoke: int
-    alcohol: int
+@survey_router.put("/update-basic-info/{user_id}")
+def update_basic_info(request, user_id: int, payload: BasicInfoSchema):
+    basic_info = get_object_or_404(BasicInfo, user_id=user_id)
+    for attr, value in payload.dict().items():
+        setattr(basic_info, attr, value)
+    basic_info.save()
+    return {"success": True}
 
 
+@survey_router.delete("/delete-basic-info/{user_id}")
+def delete_basic_info(request, user_id: int):
+    basic_info = get_object_or_404(BasicInfo, user_id=user_id)
+    basic_info.delete()
+    return {"success": True}
 
-        
-"""
+
+# CRUD for Survey as a whole
 @survey_router.post("/create-survey")
 def create_survey(request, payload: SurveySchema):
     new_survey = Survey.objects.create(**payload.dict())
     return {"user_id": new_survey.id}
 
-"""
 
-"""
-create survey objects
-"""
-        
-@survey_router.post("/survey1")
-def create_survey1(request):
-    new_survey_1 = Survey_1.objects.create()
-    return {"user_id": new_survey_1.id}
-
-@survey_router.post("/survey2")
-def create_survey2(request):
-    new_survey_2 = Survey_2.objects.create()
-    return {"user_id": new_survey_2.id}
+@survey_router.get("/retrieve-survey/{user_id}", response={200: SurveySchema, 404: SurveyError})
+def retrieve_survey(request, user_id: int):
+    survey = get_object_or_404(Survey, user_id=user_id)
+    return survey
 
 
-"""
-put individual fields into table
-
-"""
-
-
-"""
 @survey_router.put("/update-survey/{user_id}")
 def update_survey(request, user_id: int, payload: SurveySchema):
-    survey = get_survey_or_404(user_id)
+    survey = get_object_or_404(Survey, user_id=user_id)
     for attr, value in payload.dict().items():
         setattr(survey, attr, value)
     survey.save()
     return {"success": True}
 
 
-"""
-
-class Q1(Schema):
-    user_name: str
-
-@survey_router.put("/q1/{user_id}")
-def q1(request, user_id: user_id, usr_name: Q1):
-    user = get_object_or_404(Survey_1, id=user_id)
-    user,user_name = Q1.user_name
-    return {'success': True}
-
-
-
-
-@survey_router.get("/retrieve-survey/{user_id}", response={200: SurveySchema, 404: Error})
-def retrieve_survey(request, user_id: int):
-    return get_survey_or_404(user_id)
-
-
-@survey_router.get("/all-user-survey")
-def get_all_survey(request):
-    return Survey.objects.all()
-
-"""
-
 @survey_router.delete("/delete-survey/{user_id}")
 def delete_survey(request, user_id: int):
-    survey = get_survey_or_404(user_id)
+    survey = get_object_or_404(Survey, user_id=user_id)
     survey.delete()
     return {"success": True}
 
-
-def get_survey_or_404(user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 404
-    return survey
-"""

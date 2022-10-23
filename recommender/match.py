@@ -1,9 +1,8 @@
 import numpy as np
+from django.shortcuts import get_object_or_404
 
 from survey.models import Survey
-from recommender.schema import MatchResult, Error
 from recommender.baseline import get_match_score
-from survey.api import get_survey_or_404
 
 
 class MatchResult:
@@ -13,12 +12,8 @@ class MatchResult:
     def __init__(self, main_user_id, other_user_id):
         self.other_user_id = other_user_id
 
-        main_user = get_survey_or_404(main_user_id)  # object
-        other_user = get_survey_or_404(other_user_id)  # object
-        if main_user == 404:
-            raise Exception(f"Main user (user id: {main_user_id}) does not exist.")
-        elif other_user == 404:
-            raise Exception(f"Other user (user id: {other_user_id}) does not exist.")
+        main_user = get_object_or_404(Survey, user_id=main_user_id)  # main user object
+        other_user = get_object_or_404(Survey, user_id=main_user_id)  # other user object
         main_user_data = []
         other_user_data = []
         main_user_data.append(main_user.academic)

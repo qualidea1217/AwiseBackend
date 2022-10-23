@@ -1,55 +1,26 @@
-from ninja import Schema
+from ninja import Schema, ModelSchema
+from survey.models import BasicInfo, Survey
 
 
-class SurveySchema(Schema):
-    user_id: int
-    user_name: str
-    year: int
-    rent: int
-    move_in_date: str
-    num_of_rm: int
-    location: str
-    social: int
-    academic: int
-    getup_time: int
-    bed_time: int
-    bring_people: int
-    animal: int
-    instrument: int
-    clean: int
-    cook: int
-    share: int
-    smoke: int
-    alcohol: int
-
-class UserBasicInfoSchema(Schema):
-    is_authenticated: bool
-    user_id: str
-    user_name: str
-    year: int
-    email: str
-    move_in_date: str
-    num_of_rm: int
-    location: str
+class BasicInfoSchema(ModelSchema):
+    class Config:
+        model = BasicInfo
+        model_fields = ["user_id", "user_name", "email", "password", "school_year", "rent", "move_in_date",
+                        "number_of_room", "location"]
 
 
-class UserHabitSchema(Schema):
-    getup_time: str
-    bed_time: str
-    bring_people: int
-    animal: int
-    instrument: int
-    clean: int
-    cook: int
-    share: int
-    smoke: int
-    alcohol: int
+class SurveySchema(ModelSchema):
+    class Config:
+        model = Survey
+        model_fields = ["basic_info", "getup_time", "getup_time_w", "bed_time", "bed_time_w", "social", "social_w",
+                        "academic", "academic_w", "bring_people", "bring_people_w", "animal", "animal_w", "instrument",
+                        "instrument_w", "cleaning", "cleaning_w", "cook", "cook_w", "share", "share_w", "smoke",
+                        "smoke_w", "alcohol", "alcohol_w"]
 
 
-class UserPersonalitySchema(Schema):
-    academic: int
-    introvert_extrovert: int
+class BasicInfoError(Schema):
+    message: str
 
 
-class Error(Schema):
+class SurveyError(Schema):
     message: str
