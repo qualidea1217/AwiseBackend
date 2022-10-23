@@ -15,7 +15,7 @@ class Survey1Schema(Schema):
     user_id: str
     user_name: str
     email: str
-    y: int
+    year: int
     rent: int
     move_in_date: int
     num_of_rm: int
@@ -40,32 +40,58 @@ class Survey2Schema(Schema):
 
 
 
-@api.post("/survey1")
-def create_survey1(request):
-    Survey_1.objects.create()
-    return {}
-
-@api.post("/survey2")
-def create_survey2(request):
-    Survey_2.objects.create()
-    return {'success': True}
-
-
-class Q1(Schema):
-    user_name: str
-
-@api.put("/q1/{user_id}")
-def q1(request, user_id: int, usr_name: Q1):
-    user = get_object_or_404(Survey_1, id=user_id)
-    user,user_name = Q1.user_name
-    return {'success': True}
-
+        
 """
-
 @survey_router.post("/create-survey")
 def create_survey(request, payload: SurveySchema):
     new_survey = Survey.objects.create(**payload.dict())
     return {"user_id": new_survey.id}
+
+"""
+
+"""
+create survey objects
+"""
+        
+@survey_router.post("/survey1")
+def create_survey1(request):
+    new_survey_1 = Survey_1.objects.create()
+    return {"user_id": new_survey_1.id}
+
+@survey_router.post("/survey2")
+def create_survey2(request):
+    new_survey_2 = Survey_2.objects.create()
+    return {"user_id": new_survey_2.id}
+
+
+"""
+put individual fields into table
+
+"""
+
+
+"""
+@survey_router.put("/update-survey/{user_id}")
+def update_survey(request, user_id: int, payload: SurveySchema):
+    survey = get_survey_or_404(user_id)
+    for attr, value in payload.dict().items():
+        setattr(survey, attr, value)
+    survey.save()
+    return {"success": True}
+
+
+"""
+
+class Q1(Schema):
+    user_name: str
+
+@survey_router.put("/q1/{user_id}")
+def q1(request, user_id: user_id, usr_name: Q1):
+    user = get_object_or_404(Survey_1, id=user_id)
+    user,user_name = Q1.user_name
+    return {'success': True}
+
+
 
 
 @survey_router.get("/retrieve-survey/{user_id}", response={200: SurveySchema, 404: Error})
@@ -77,15 +103,7 @@ def retrieve_survey(request, user_id: int):
 def get_all_survey(request):
     return Survey.objects.all()
 
-
-@survey_router.put("/update-survey/{user_id}")
-def update_survey(request, user_id: int, payload: SurveySchema):
-    survey = get_survey_or_404(user_id)
-    for attr, value in payload.dict().items():
-        setattr(survey, attr, value)
-    survey.save()
-    return {"success": True}
-
+"""
 
 @survey_router.delete("/delete-survey/{user_id}")
 def delete_survey(request, user_id: int):
