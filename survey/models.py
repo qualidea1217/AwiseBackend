@@ -24,7 +24,7 @@ class Survey_1(models.Model):
 
 class Survey_2(models.Model):
 	# personality
-	survey_1 = models.OneToOneField(Survey_1)
+	survey_1 = models.OneToOneField(Survey_1, on_delete = models.CASCADE, primary_key = True)
 	social = models.IntegerField(
 		validators=[
             MaxValueValidator(10),
