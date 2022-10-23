@@ -16,11 +16,15 @@ class Survey_1(models.Model):
 	# habits
 	getup_time = models.IntegerField()
 	bed_time = models.IntegerField()
+	
+	# email and password
+	email = models.TextField()
+	password = models.TextField()
    
 
 class Survey_2(models.Model):
 	# personality
-	survey_1 = models.OneToOneField(Survey_1)
+	survey_1 = models.OneToOneField(Survey_1, on_delete = models.CASCADE, primary_key = True)
 	social = models.IntegerField(
 		validators=[
             MaxValueValidator(10),
@@ -81,5 +85,4 @@ class Survey_2(models.Model):
             MinValueValidator(1)
         ])
 	alcohol_w = models.IntegerField()
-	email = models.TextField()
-	password = models.TextField()
+	
