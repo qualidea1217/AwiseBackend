@@ -16,6 +16,10 @@ class Survey_1(models.Model):
 	# habits
 	getup_time = models.IntegerField()
 	bed_time = models.IntegerField()
+	
+	# email and password
+	email = models.TextField()
+	password = models.TextField()
    
 
 class Survey_2(models.Model):
@@ -81,5 +85,4 @@ class Survey_2(models.Model):
             MinValueValidator(1)
         ])
 	alcohol_w = models.IntegerField()
-	email = models.TextField()
-	password = models.TextField()
+	
