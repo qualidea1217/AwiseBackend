@@ -26,8 +26,16 @@ class SurveyGetupTimeSchema(Schema):
     getup_time: int
 
 
+class BasicInfoSuccess(Schema):
+    success: bool
+
+
 class BasicInfoError(Schema):
     message: str
+
+
+class SurveySuccess(Schema):
+    success: bool
 
 
 class SurveyError(Schema):
