@@ -1,8 +1,8 @@
 from django.shortcuts import get_object_or_404
 from ninja import Router
 
+from survey.schema import *
 from survey.models import BasicInfo, Survey
-from survey.schema import BasicInfoSchema, SurveySchema, BasicInfoError, SurveyError
 
 survey_router = Router()
 
@@ -62,5 +62,35 @@ def update_survey(request, user_id: int, payload: SurveySchema):
 def delete_survey(request, user_id: int):
     survey = get_object_or_404(Survey, user_id=user_id)
     survey.delete()
+    return {"success": True}
+
+
+# RU for basic info user name
+@survey_router.post("/retrieve-basic-info-user-name/{user_id}", response={200: BasicInfoUserNameSchema, 404: BasicInfoError})
+def retrieve_basic_info_user_id(request, user_id: int):
+    basic_info_user_name = get_object_or_404(BasicInfo, user_id=user_id).user_name
+    return basic_info_user_name
+
+
+@survey_router.put("/update-basic-info-user-name/{user-id}")
+def update_basic_info_user_id(request, user_id: int, payload: BasicInfoUserNameSchema):
+    basic_info = get_object_or_404(BasicInfo, user_id=user_id)
+    basic_info.user_name = payload.user_name
+    basic_info.save()
+    return {"success": True}
+
+
+# RU for survey getup time
+@survey_router.post("/retrieve-survey-getup-time/{user_id}", response={200: SurveyGetupTimeSchema, 404: SurveyError})
+def retrieve_survey_getup_time(request, user_id: int):
+    survey_user_getup_time = get_object_or_404(Survey, user_id=user_id).getup_time
+    return survey_user_getup_time
+
+
+@survey_router.put("/update-survey-getup-time/{user-id}")
+def update_survey_getup_time(request, user_id: int, payload: SurveyGetupTimeSchema):
+    survey = get_object_or_404(Survey, user_id=user_id)
+    survey.getup_time = payload.getup_time
+    survey.save()
     return {"success": True}
 

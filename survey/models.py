@@ -6,7 +6,7 @@ from django.db import models
 
 class BasicInfo(models.Model):
     # account basic info
-    user_id = models.AutoField(primary_key=True)
+    user_id = models.IntegerField(primary_key=True)
     user_name = models.TextField()
     email = models.TextField()
     password = models.TextField()
@@ -16,17 +16,18 @@ class BasicInfo(models.Model):
 
     # property info
     rent = models.IntegerField()
-    move_in_date = models.IntegerField()  # models.DateField()
+    move_in_date = models.TextField()  # models.DateField()
     number_of_room = models.IntegerField()
     location = models.TextField()
 
 
 class Survey(models.Model):
-    basic_info = models.OneToOneField(BasicInfo, on_delete=models.CASCADE, primary_key=True)
+    user_id = models.IntegerField(primary_key=True)
+    # basic_info = models.OneToOneField(BasicInfo, on_delete=models.CASCADE, primary_key=True)
     # habits and personality
-    getup_time = models.IntegerField()
+    getup_time = models.TextField()
     getup_time_w = models.IntegerField()
-    bed_time = models.IntegerField()
+    bed_time = models.TextField()
     bed_time_w = models.IntegerField()
     social = models.IntegerField(
         validators=[
