@@ -82,7 +82,7 @@ def delete_survey(request, user_id: int):
 
 
 # RU for basic info user name
-@survey_router.post("/retrieve-basic-info-user-name/{user_id}", response={200: BasicInfoUserNameSchema, 403: BasicInfoError})
+@survey_router.get("/retrieve-basic-info-user-name/{user_id}", response={200: BasicInfoUserNameSchema, 403: BasicInfoError})
 def retrieve_basic_info_user_id(request, user_id: int):
     try:
         basic_info = BasicInfo.objects.get(user_id=user_id)
@@ -103,7 +103,7 @@ def update_basic_info_user_id(request, user_id: int, payload: BasicInfoUserNameS
 
 
 # RU for survey getup time
-@survey_router.post("/retrieve-survey-getup-time/{user_id}", response={200: SurveyGetupTimeSchema, 403: SurveyError})
+@survey_router.get("/retrieve-survey-getup-time/{user_id}", response={200: SurveyGetupTimeSchema, 403: SurveyError})
 def retrieve_survey_getup_time(request, user_id: int):
     try:
         survey = Survey.objects.get(user_id=user_id)
