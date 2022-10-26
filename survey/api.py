@@ -1,8 +1,6 @@
-from django.shortcuts import get_object_or_404
 from ninja import Router
 
 from survey.schema import *
-from survey.models import BasicInfo, Survey
 
 survey_router = Router()
 
@@ -93,7 +91,7 @@ def retrieve_basic_info_user_id(request, user_id: int):
     return basic_info.user_name
 
 
-@survey_router.put("/update-basic-info-user-name/{user-id}", response={200: BasicInfoSuccess, 403: BasicInfoError})
+@survey_router.put("/update-basic-info-user-name/{user_id}", response={200: BasicInfoSuccess, 403: BasicInfoError})
 def update_basic_info_user_id(request, user_id: int, payload: BasicInfoUserNameSchema):
     try:
         basic_info = BasicInfo.objects.get(user_id=user_id)
@@ -114,7 +112,7 @@ def retrieve_survey_getup_time(request, user_id: int):
     return survey.getup_time
 
 
-@survey_router.put("/update-survey-getup-time/{user-id}", response={200: SurveySuccess, 403: SurveyError})
+@survey_router.put("/update-survey-getup-time/{user_id}", response={200: SurveySuccess, 403: SurveyError})
 def update_survey_getup_time(request, user_id: int, payload: SurveyGetupTimeSchema):
     try:
         survey = Survey.objects.get(user_id=user_id)
