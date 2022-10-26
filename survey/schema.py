@@ -25,6 +25,32 @@ class SurveySchema(ModelSchema):
 class SurveyGetupTimeSchema(Schema):
     getup_time: int
 
+class SurveyGetupTimeWSchema(Schema):
+    getup_time_w: int
+
+class SurveyBedTimeSchema(Schema):
+    bed_time: int
+
+class SurveyBedTimeWSchema(Schema):
+    bed_time_w: int
+
+class SurveySocialSchema(Schema):
+    social: int
+     
+class SurveySocialWSchema(Schema):
+    social_w: int
+        
+class SurveyAcademicSchema(Schema):
+    academic: int
+     
+class SurveyAcademicWSchema(Schema):
+    academic_w: int
+        
+class SurveyBringPeopleSchema(Schema):
+    bring_people: int
+     
+class SurveyBringPeopleWSchema(Schema):
+    bring_people_w: int
 
 class BasicInfoSuccess(Schema):
     success: bool
