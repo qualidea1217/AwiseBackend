@@ -83,7 +83,7 @@ def delete_survey(request, user_id: int):
 
 # RU for basic info user name
 @survey_router.get("/retrieve-basic-info-user-name/{user_id}", response={200: BasicInfoUserNameSchema, 403: BasicInfoError})
-def retrieve_basic_info_user_id(request, user_id: int):
+def retrieve_basic_info_user_name(request, user_id: int):
     try:
         basic_info = BasicInfo.objects.get(user_id=user_id)
     except BasicInfo.DoesNotExist:
@@ -92,7 +92,7 @@ def retrieve_basic_info_user_id(request, user_id: int):
 
 
 @survey_router.put("/update-basic-info-user-name/{user_id}", response={200: BasicInfoSuccess, 403: BasicInfoError})
-def update_basic_info_user_id(request, user_id: int, payload: BasicInfoUserNameSchema):
+def update_basic_info_user_name(request, user_id: int, payload: BasicInfoUserNameSchema):
     try:
         basic_info = BasicInfo.objects.get(user_id=user_id)
     except BasicInfo.DoesNotExist:
