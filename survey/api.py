@@ -122,3 +122,66 @@ def update_survey_getup_time(request, user_id: int, payload: SurveyGetupTimeSche
     survey.save()
     return 200, {"success": True}
 
+
+# RU for survey getup time weight
+@survey_router.get("/retrieve-survey-getup-time-w/{user_id}", response={200: SurveyGetupTimeWSchema, 403: SurveyError})
+def retrieve_survey_getup_time_w(request, user_id: int):
+    try:
+        survey = Survey.objects.get(user_id=user_id)
+    except Survey.DoesNotExist:
+        return 403, {"message": "Survey Does Not Exist."}
+    return survey.getup_time_w
+
+
+@survey_router.put("/update-survey-getup-time-w/{user_id}", response={200: SurveySuccess, 403: SurveyError})
+def update_survey_getup_time_w(request, user_id: int, payload: SurveyGetupTimeWSchema):
+    try:
+        survey = Survey.objects.get(user_id=user_id)
+    except Survey.DoesNotExist:
+        return 403, {"message": "Survey Does Not Exist."}
+    survey.getup_time_w = payload.getup_time_w
+    survey.save()
+    return 200, {"success": True}
+
+
+# RU for survey bed time
+@survey_router.get("/retrieve-survey-bed-time/{user_id}", response={200: SurveyBedTimeSchema, 403: SurveyError})
+def retrieve_survey_bed_time(request, user_id: int):
+    try:
+        survey = Survey.objects.get(user_id=user_id)
+    except Survey.DoesNotExist:
+        return 403, {"message": "Survey Does Not Exist."}
+    return survey.bed_time
+
+
+@survey_router.put("/update-survey-bed-time/{user_id}", response={200: SurveySuccess, 403: SurveyError})
+def update_survey_bed_time(request, user_id: int, payload: SurveyBedTimeSchema):
+    try:
+        survey = Survey.objects.get(user_id=user_id)
+    except Survey.DoesNotExist:
+        return 403, {"message": "Survey Does Not Exist."}
+    survey.bed_time = payload.bed_time
+    survey.save()
+    return 200, {"success": True}
+
+
+# RU for survey bed time weight
+@survey_router.get("/retrieve-survey-bed-time-w/{user_id}", response={200: SurveyBedTimeWSchema, 403: SurveyError})
+def retrieve_survey_bed_time_w(request, user_id: int):
+    try:
+        survey = Survey.objects.get(user_id=user_id)
+    except Survey.DoesNotExist:
+        return 403, {"message": "Survey Does Not Exist."}
+    return survey.bed_time_w
+
+
+@survey_router.put("/update-survey-bed-time-w/{user_id}", response={200: SurveySuccess, 403: SurveyError})
+def update_survey_bed_time_w(request, user_id: int, payload: SurveyBedTimeWSchema):
+    try:
+        survey = Survey.objects.get(user_id=user_id)
+    except Survey.DoesNotExist:
+        return 403, {"message": "Survey Does Not Exist."}
+    survey.bed_time_w = payload.bed_time_w
+    survey.save()
+    return 200, {"success": True}
+
