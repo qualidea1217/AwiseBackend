@@ -25,14 +25,15 @@ def retrieve_match_result(request, user_id: int):
     other_user_survey_query = Survey.objects.exclude(user_id=user_id)  # get queryset of objects of other users survey
     other_user_survey_list = list(other_user_survey_query)  # convert queryset to list
 
-    current_user_data, current_user_data_weight = get_data_array(
-        current_user_survey)  # get data and weight of the current user in numpy array
+    # get data and weight of the current user in numpy array
+    current_user_data, current_user_data_weight = get_data_array(current_user_survey)
     match_result_list = []
     for other_user_survey in other_user_survey_list:
-        other_user_data, other_user_data_weight = get_data_array(
-            other_user_survey)  # get data and weight of the other user in numpy array
+        # get data and weight of the other user in numpy array
+        other_user_data, other_user_data_weight = get_data_array(other_user_survey)
         match_score_base = get_match_score(current_user_data, current_user_data_weight, other_user_data,
                                            other_user_data_weight)  # calculate match score with baseline
         match_result_list.append({"user_id": other_user_survey.user_id, "match_score": match_score_base})
-    match_result_list.sort(key=lambda x: x["match_score"], reverse=True)  # sort each match result by value of match score
+    #  sort in descending order based on match score
+    match_result_list.sort(key=lambda x: x["match_score"], reverse=True)
     return match_result_list

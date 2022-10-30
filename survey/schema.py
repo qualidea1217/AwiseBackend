@@ -62,6 +62,62 @@ class SurveyBringPeopleWSchema(Schema):
     bring_people_w: int
 
 
+class SurveyAnimalSchema(Schema):
+    animal: int
+
+
+class SurveyAnimalWSchema(Schema):
+    animal_w: int
+
+
+class SurveyInstrumentSchema(Schema):
+    instrument: int
+
+
+class SurveyInstrumentWSchema(Schema):
+    instrument_w: int
+
+
+class SurveyCleaningSchema(Schema):
+    cleaning: int
+
+
+class SurveyCleaningWSchema(Schema):
+    cleaning_w: int
+
+
+class SurveyCookSchema(Schema):
+    cook: int
+
+
+class SurveyCookWSchema(Schema):
+    cook_w: int
+
+
+class SurveyShareSchema(Schema):
+    share: int
+
+
+class SurveyShareWSchema(Schema):
+    share_w: int
+
+
+class SurveySmokeSchema(Schema):
+    smoke: int
+
+
+class SurveySmokeWSchema(Schema):
+    smoke_w: int
+
+
+class SurveyAlcoholSchema(Schema):
+    alcohol: int
+
+
+class SurveyAlcoholWSchema(Schema):
+    alcohol_w: int
+
+
 class BasicInfoSuccess(Schema):
     success: bool
 
