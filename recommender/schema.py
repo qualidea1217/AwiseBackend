@@ -1,12 +1,10 @@
 from ninja import Schema
 
 
-class Error(Schema):
+class MatchError(Schema):
     message: str
 
 
-class MatchResult(Schema):
-    match_user_info: list
-    match_score: list[int]
-    match_user_email: list[str]
+class MatchResultSchema(Schema):
+    match_result = list[dict]
 
