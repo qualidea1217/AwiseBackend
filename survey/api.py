@@ -9,7 +9,7 @@ survey_router = Router()
 @survey_router.post("/create-basic-info")
 def create_basic_info(request, payload: BasicInfoSchema):
     new_basic_info = BasicInfo.objects.create(**payload.dict())
-    return {"user_id": new_basic_info.id}
+    return {"user_id": new_basic_info.user_id}
 
 
 @survey_router.get("/retrieve-basic-info/{user_id}", response={200: BasicInfoSchema, 403: BasicInfoError})
