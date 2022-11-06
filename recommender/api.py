@@ -93,7 +93,7 @@ def retrieve_match_result_cluster(request, user_id: int):
     match_result_list = []
 
     # get list of user data that is within the same cluster of the current user without including current user
-    # all_user_data_list[i] is the numpy array of the user data
+    # all_user_data_list[index] is the numpy array of the user data
     for index in cluster_index_list:
         if all_user_data_list[index][0] != user_id:
             top_3_field = get_top_3_field(current_user_data, np.delete(all_user_data_list[index], 0))
