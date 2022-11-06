@@ -1,21 +1,39 @@
-from ninja import NinjaAPI
+from ninja import Router
 import numpy as np
 
-from recommender.models import Survey
-from recommender.schema import MatchResult, Error
-from recommender.algorithm import get_match_score
+from survey.models import Survey
+from recommender.schema import MatchResultSchema, MatchError
+from recommender.baseline import get_match_score
 
-api = NinjaAPI()
+recommender_router = Router()
 
 
-@api.get("/retrieve-match-result/{user_id}", response={200: MatchResult, 404: Error})
-def retrieve_base_match_result(request, user_id: int):
-    current_user_info = Survey.objects.get(user_id)
-    user_list = []  # TODO: retrieve all user id to get all user
-    user_info_list = [Survey.objects.get(user) for user in user_list if user != user_id]  # exclude current user itself
-    # TODO: convert user_info to a ndarray, compute match score, store in a list with same sequence
-    match_score_list = [get_match_score(current_user_info, np.array([1] * len(current_user_info)),
-                                        user_info, np.array([1] * len(current_user_info)))
-                        for user_info in user_info_list]  # TODO: add weight array
-    # TODO: return the result
+def get_data_array(user_object):
+    user_data = [user_object.getup_time, user_object.bed_time, user_object.social, user_object.academic,
+                 user_object.bring_people, user_object.animal, user_object.instrument, user_object.cleaning,
+                 user_object.cook, user_object.share, user_object.smoke, user_object.alcohol]
+    user_data_weight = [user_object.getup_time_w, user_object.bed_time_w, user_object.social_w, user_object.academic_w,
+                        user_object.bring_people_w, user_object.animal_w, user_object.instrument_w,
+                        user_object.cleaning_w, user_object.cook_w, user_object.share_w, user_object.smoke_w,
+                        user_object.alcohol_w]
+    return np.array(user_data), np.array(user_data_weight)
 
+
+@recommender_router.get("/retrieve-match-result-base/{user_id}", response={200: MatchResultSchema, 403: MatchError})
+def retrieve_match_result(request, user_id: int):
+    current_user_survey = Survey.objects.get(user_id)  # get object of current user survey
+    other_user_survey_query = Survey.objects.exclude(user_id=user_id)  # get queryset of objects of other users survey
+    other_user_survey_list = list(other_user_survey_query)  # convert queryset to list
+
+    # get data and weight of the current user in numpy array
+    current_user_data, current_user_data_weight = get_data_array(current_user_survey)
+    match_result_list = []
+    for other_user_survey in other_user_survey_list:
+        # get data and weight of the other user in numpy array
+        other_user_data, other_user_data_weight = get_data_array(other_user_survey)
+        match_score_base = get_match_score(current_user_data, current_user_data_weight, other_user_data,
+                                           other_user_data_weight)  # calculate match score with baseline
+        match_result_list.append({"user_id": other_user_survey.user_id, "match_score": match_score_base})
+    #  sort in descending order based on match score
+    match_result_list.sort(key=lambda x: x["match_score"], reverse=True)
+    return match_result_list

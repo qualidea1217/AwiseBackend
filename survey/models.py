@@ -1,27 +1,91 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
 # Create your models here.
-class Survey(models.Model):
-    # basic info
-    user_id = models.IntegerField()
+
+class BasicInfo(models.Model):
+    # account basic info
+    user_id = models.IntegerField(primary_key=True)
     user_name = models.TextField()
-    year = models.IntegerField()
+    email = models.TextField()
+    password = models.TextField()
+
+    # student personal info
+    school_year = models.IntegerField()
+
+    # property info
     rent = models.IntegerField()
-    move_in_date = models.DateField()
-    num_of_rm = models.IntegerField()
+    move_in_date = models.TextField()  # models.DateField()
+    number_of_room = models.IntegerField()
     location = models.TextField()
-    # personality
-    social = models.IntegerField()
-    academic = models.IntegerField()
-    # habits
-    getup_time = models.IntegerField()
-    bed_time = models.IntegerField()
-    bring_people = models.IntegerField()
-    animal = models.IntegerField()
-    instrument = models.IntegerField()
-    clean = models.IntegerField()
-    cook = models.IntegerField()
-    share = models.IntegerField()
-    smoke = models.IntegerField()
-    alcohol = models.IntegerField()
+
+
+class Survey(models.Model):
+    user_id = models.IntegerField(primary_key=True)
+    # basic_info = models.OneToOneField(BasicInfo, on_delete=models.CASCADE, primary_key=True)
+    # habits and personality
+    getup_time = models.TextField()
+    getup_time_w = models.IntegerField()
+    bed_time = models.TextField()
+    bed_time_w = models.IntegerField()
+    social = models.IntegerField(
+        validators=[
+            MaxValueValidator(10),
+            MinValueValidator(1)
+        ])
+    social_w = models.IntegerField()
+    academic = models.IntegerField(
+        validators=[
+            MaxValueValidator(10),
+            MinValueValidator(1)
+        ])
+    academic_w = models.IntegerField()
+    bring_people = models.IntegerField(
+        validators=[
+            MaxValueValidator(10),
+            MinValueValidator(1)
+        ])
+    bring_people_w = models.IntegerField()
+    animal = models.IntegerField(
+        validators=[
+            MaxValueValidator(10),
+            MinValueValidator(1)
+        ])
+    animal_w = models.IntegerField()
+    instrument = models.IntegerField(
+        validators=[
+            MaxValueValidator(10),
+            MinValueValidator(1)
+        ])
+    instrument_w = models.IntegerField()
+    cleaning = models.IntegerField(
+        validators=[
+            MaxValueValidator(10),
+            MinValueValidator(1)
+        ])  # 'clean' is a keyword, don't use it as val name
+    cleaning_w = models.IntegerField()
+    cook = models.IntegerField(
+        validators=[
+            MaxValueValidator(10),
+            MinValueValidator(1)
+        ])
+    cook_w = models.IntegerField()
+    share = models.IntegerField(
+        validators=[
+            MaxValueValidator(10),
+            MinValueValidator(1)
+        ])
+    share_w = models.IntegerField()
+    smoke = models.IntegerField(
+        validators=[
+            MaxValueValidator(10),
+            MinValueValidator(1)
+        ])
+    smoke_w = models.IntegerField()
+    alcohol = models.IntegerField(
+        validators=[
+            MaxValueValidator(10),
+            MinValueValidator(1)
+        ])
+    alcohol_w = models.IntegerField()
