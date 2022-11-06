@@ -56,7 +56,8 @@ def match_score(user1: ndarray, user2: ndarray, metric: str = "euclidean") -> fl
         return float(np.dot(user1, user2))
 
 
-def get_match_score(user1: ndarray, weight1: ndarray, user2: ndarray, weight2: ndarray, preprocess: str = "normalize") -> float:
+def get_match_score(user1: ndarray, weight1: ndarray, user2: ndarray, weight2: ndarray,
+                    preprocess: str = "normalize") -> float:
     """
     An all-in-one function that accepts two raw user data and give similarity between them
     :param preprocess: specify the type of data preprocessing, can be either normalize or standardize
@@ -78,3 +79,42 @@ def get_match_score(user1: ndarray, weight1: ndarray, user2: ndarray, weight2: n
     weighted_data2 = weight_data(processed_user2, weight2)
     return match_score(weighted_data1, weighted_data2)
 
+
+def get_num_similarity(num1: int | float, num2: int | float) -> float:
+    """
+    Calculate similarity between two numbers
+    :param num1: number
+    :param num2: umber
+    :return: similarity range between 0 and 1
+    """
+    if num1 == num2:
+        return 1
+    else:
+        return min(num1, num2) / max(num1, num2)
+
+
+def get_top_3_field(user1: ndarray, user2: ndarray) -> list[list[str, float]]:
+    """
+    Calculate the similarity of each individual field without weight and return the top three field
+    :param user1: data without weight
+    :param user2: data without weight
+    :return: list of top 3 field, each element is a list that the 1st element is the name of the field, the 2nd element
+    is the similarity
+    """
+    lookup_table = {
+        0: "getup_time",
+        1: "bed_time",
+        2: "social",
+        3: "academic",
+        4: "bring_people",
+        5: "animal",
+        6: "instrument",
+        7: "cleaning",
+        8: "cook",
+        9: "share",
+        10: "smoke",
+        11: "alcohol"
+    }
+    similarity_array = [[lookup_table[i], get_num_similarity(user1[i], user2[i])] for i in range(len(user1))]
+    similarity_array.sort(key=lambda x: x[1], reverse=True)
+    return similarity_array[:3]
