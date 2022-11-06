@@ -22,24 +22,11 @@ import os
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "AwiseBackend.settings")
 
-# =============================================================================
-# from survey.models import Survey
-# 
-# 
-# conn = sqlite3.connect('Survey') 
-#         
-# numDf = pd.read_sql_query ('''
-#                                 SELECT*
-#                                 FROM survey_Survey as T
-#                                 ''', conn)                            
-# 
-# =============================================================================
-#numDf = pd.DataFrame(data=np.random.normal(0, 1, (100, 10))) #Testing
 
-def fun (nparray):
-
-    numDf = pd.DataFrame(nparray)
+def fun (userData, userWeight):
     
+    nparray = [np.multiply(userData[i],userWeight[i]) for i in range(len(userData))]
+    numDf = pd.DataFrame(nparray)
     
     #******* PCA ***********
     normData = StandardScaler().fit_transform(numDf)
@@ -79,9 +66,11 @@ def fun (nparray):
     
     matchScoreOut = minmax_scale(eucDist)
     
+    
     #Find group
     userGroup = KM.labels_[userIDX]
     groupOut = [i for i, x in enumerate(KM.labels_) if x == userGroup]
+    
     
     return matchScoreOut, groupOut 
 
