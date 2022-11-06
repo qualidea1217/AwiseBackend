@@ -23,7 +23,7 @@ import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "AwiseBackend.settings")
 
 
-def get_cluster(userData: list, userWeight: list):
+def get_cluster(userData: list, userWeight: list, userID: int):
     nparray = [np.multiply(userData[i], userWeight[i]) for i in range(len(userData))]
     numDf = pd.DataFrame(nparray)
 
@@ -50,7 +50,7 @@ def get_cluster(userData: list, userWeight: list):
 
     KM = sklearn.cluster.KMeans(n_clusters=np.argmax(calinskiScore) + 2, random_state=0).fit(score)
 
-    userIDX = 5
+    userIDX = numDf.loc[numDf[:0] == userID] 
 
     # Find the score
     eucDist = []
@@ -66,3 +66,10 @@ def get_cluster(userData: list, userWeight: list):
     groupOut = [i for i, x in enumerate(KM.labels_) if x == userGroup]
 
     return matchScoreOut, groupOut
+
+    
+
+
+
+
+
