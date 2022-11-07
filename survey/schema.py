@@ -5,12 +5,48 @@ from survey.models import BasicInfo, Survey
 class BasicInfoSchema(ModelSchema):
     class Config:
         model = BasicInfo
-        model_fields = ["user_id", "user_name", "email", "password", "school_year", "rent", "move_in_date",
-                        "number_of_room", "location"]
+        model_fields = ["user_id", "user_name", "email", "password", "gender", "profile_picture", "school_year", "rent",
+                        "move_in_date", "number_of_room", "location"]
 
 
 class BasicInfoUserNameSchema(Schema):
     user_name: int
+
+
+class BasicInfoEmailSchema(Schema):
+    email: str
+
+
+class BasicInfoPasswordSchema(Schema):
+    password: str
+
+
+class BasicInfoGenderSchema(Schema):
+    gender: str
+
+
+class BasicInfoProfilePictureSchema(Schema):
+    profile_picture: str
+
+
+class BasicInfoSchoolYearSchema(Schema):
+    school_year: int
+
+
+class BasicInfoRentSchema(Schema):
+    rent: int
+
+
+class BasicInfoMoveInDateSchema(Schema):
+    move_in_date: str
+
+
+class BasicInfoNumberOfRoomSchema(Schema):
+    number_of_room: int
+
+
+class BasicInfoLocationSchema(Schema):
+    location: str
 
 
 class SurveySchema(ModelSchema):
