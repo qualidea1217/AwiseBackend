@@ -10,7 +10,7 @@ class BasicInfoSchema(ModelSchema):
 
 
 class BasicInfoUserNameSchema(Schema):
-    user_name: int
+    user_name: str
 
 
 class BasicInfoEmailSchema(Schema):

@@ -75,7 +75,7 @@ def retrieve_match_result_base(request, user_id: int):
     return output
 
 
-@recommender_router.get("/retrieve-match-result-cluster/{user-id}", response={200: MatchResultSchema, 403: MatchError})
+@recommender_router.get("/retrieve-match-result-cluster/{user_id}", response={200: MatchResultSchema, 403: MatchError})
 def retrieve_match_result_cluster(request, user_id: int):
     current_user_survey = Survey.objects.get(user_id)  # get object of current user survey
     # get data and weight of the current user in numpy array
