@@ -11,7 +11,7 @@ class BasicInfo(models.Model):
     email = models.TextField()
     password = models.TextField()
     gender = models.TextField()
-    profile_picture = models.ImageField(upload_to="profile_picture")
+    profile_picture = models.ImageField(upload_to="profile_picture/")
 
     # student personal info
     school_year = models.IntegerField()
