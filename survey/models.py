@@ -10,6 +10,8 @@ class BasicInfo(models.Model):
     user_name = models.TextField()
     email = models.TextField()
     password = models.TextField()
+    gender = models.TextField()
+    profile_picture = models.ImageField(upload_to="profile_picture/")
 
     # student personal info
     school_year = models.IntegerField()
@@ -25,9 +27,9 @@ class Survey(models.Model):
     user_id = models.IntegerField(primary_key=True)
     # basic_info = models.OneToOneField(BasicInfo, on_delete=models.CASCADE, primary_key=True)
     # habits and personality
-    getup_time = models.TextField()
+    getup_time = models.IntegerField()
     getup_time_w = models.IntegerField()
-    bed_time = models.TextField()
+    bed_time = models.IntegerField()
     bed_time_w = models.IntegerField()
     social = models.IntegerField(
         validators=[

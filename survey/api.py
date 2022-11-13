@@ -1,8 +1,39 @@
-from ninja import Router
+from ninja import Router, File
+from ninja.files import UploadedFile
 
 from survey.schema import *
 
 survey_router = Router()
+
+
+def get_basic_info_with_code(user_id: int):
+    """
+    Get basic info data from database as an object and handle exceptions
+    :param user_id: unique int for each user
+    :return: a tuple with code and object or dict follow the schema of the related response,
+    if the schema's field is part of the model, then just return the object itself and framework will take care of the
+    rest, otherwise you can also return a dict match with the schema.
+    """
+    try:
+        basic_info = BasicInfo.objects.get(user_id=user_id)
+    except BasicInfo.DoesNotExist:
+        return 403, {"message": "Basic Info Does Not Exist."}
+    return 200, basic_info
+
+
+def get_survey_with_code(user_id: int):
+    """
+    Get survey data from database as an object and handle exceptions
+    :param user_id: unique int for each user
+    :return: a tuple with code and object or dict follow the schema of the related response,
+    if the schema's field is part of the model, then just return the object itself and framework will take care of the
+    rest, otherwise you can also return a dict match with the schema.
+    """
+    try:
+        survey = Survey.objects.get(user_id=user_id)
+    except Survey.DoesNotExist:
+        return 403, {"message": "Survey Does Not Exist."}
+    return 200, survey
 
 
 # CRUD for basic info as a whole
@@ -14,11 +45,7 @@ def create_basic_info(request, payload: BasicInfoSchema):
 
 @survey_router.get("/retrieve-basic-info/{user_id}", response={200: BasicInfoSchema, 403: BasicInfoError})
 def retrieve_basic_info(request, user_id: int):
-    try:
-        basic_info = BasicInfo.objects.get(user_id=user_id)
-    except BasicInfo.DoesNotExist:
-        return 403, {"message": "Basic Info Does Not Exist."}
-    return basic_info
+    return get_basic_info_with_code(user_id)
 
 
 @survey_router.put("/update-basic-info/{user_id}", response={200: BasicInfoSuccess, 403: BasicInfoError})
@@ -47,16 +74,12 @@ def delete_basic_info(request, user_id: int):
 @survey_router.post("/create-survey")
 def create_survey(request, payload: SurveySchema):
     new_survey = Survey.objects.create(**payload.dict())
-    return {"user_id": new_survey.id}
+    return {"user_id": new_survey.user_id}
 
 
 @survey_router.get("/retrieve-survey/{user_id}", response={200: SurveySchema, 403: SurveyError})
 def retrieve_survey(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -82,13 +105,10 @@ def delete_survey(request, user_id: int):
 
 
 # RU for basic info user name
-@survey_router.get("/retrieve-basic-info-user-name/{user_id}", response={200: BasicInfoUserNameSchema, 403: BasicInfoError})
+@survey_router.get("/retrieve-basic-info-user-name/{user_id}",
+                   response={200: BasicInfoUserNameSchema, 403: BasicInfoError})
 def retrieve_basic_info_user_name(request, user_id: int):
-    try:
-        basic_info = BasicInfo.objects.get(user_id=user_id)
-    except BasicInfo.DoesNotExist:
-        return 403, {"message": "Basic Info Does Not Exist."}
-    return basic_info.user_name
+    return get_basic_info_with_code(user_id)
 
 
 @survey_router.put("/update-basic-info-user-name/{user_id}", response={200: BasicInfoSuccess, 403: BasicInfoError})
@@ -102,14 +122,168 @@ def update_basic_info_user_name(request, user_id: int, payload: BasicInfoUserNam
     return 200, {"success": True}
 
 
+# RU for basic info email
+@survey_router.get("/retrieve-basic-info-email/{user_id}", response={200: BasicInfoEmailSchema, 403: BasicInfoError})
+def retrieve_basic_info_email(request, user_id: int):
+    return get_basic_info_with_code(user_id)
+
+
+@survey_router.put("/update-basic-info-email/{user_id}", response={200: BasicInfoSuccess, 403: BasicInfoError})
+def update_basic_info_email(request, user_id: int, payload: BasicInfoEmailSchema):
+    try:
+        basic_info = BasicInfo.objects.get(user_id=user_id)
+    except BasicInfo.DoesNotExist:
+        return 403, {"message": "Basic Info Does Not Exist."}
+    basic_info.email = payload.email
+    basic_info.save()
+    return 200, {"success": True}
+
+
+# RU for basic info password
+@survey_router.get("/retrieve-basic-info-password/{user_id}",
+                   response={200: BasicInfoPasswordSchema, 403: BasicInfoError})
+def retrieve_basic_info_password(request, user_id: int):
+    return get_basic_info_with_code(user_id)
+
+
+@survey_router.put("/update-basic-info-password/{user_id}", response={200: BasicInfoSuccess, 403: BasicInfoError})
+def update_basic_info_password(request, user_id: int, payload: BasicInfoPasswordSchema):
+    try:
+        basic_info = BasicInfo.objects.get(user_id=user_id)
+    except BasicInfo.DoesNotExist:
+        return 403, {"message": "Basic Info Does Not Exist."}
+    basic_info.password = payload.password
+    basic_info.save()
+    return 200, {"success": True}
+
+
+# RU for basic info gender
+@survey_router.get("/retrieve-basic-info-gender/{user_id}", response={200: BasicInfoGenderSchema, 403: BasicInfoError})
+def retrieve_basic_info_gender(request, user_id: int):
+    return get_basic_info_with_code(user_id)
+
+
+@survey_router.put("/update-basic-info-gender/{user_id}", response={200: BasicInfoSuccess, 403: BasicInfoError})
+def update_basic_info_gender(request, user_id: int, payload: BasicInfoGenderSchema):
+    try:
+        basic_info = BasicInfo.objects.get(user_id=user_id)
+    except BasicInfo.DoesNotExist:
+        return 403, {"message": "Basic Info Does Not Exist."}
+    basic_info.gender = payload.gender
+    basic_info.save()
+    return 200, {"success": True}
+
+
+# RU for basic info profile picture
+@survey_router.get("/retrieve-basic-info-profile-picture/{user_id}", response={200: BasicInfoProfilePictureSchema, 403: BasicInfoError})
+def retrieve_basic_info_profile_picture(request, user_id: int):
+    return get_basic_info_with_code(user_id)
+
+
+@survey_router.put("/update-basic-info-profile-picture/{user_id}", response={200: BasicInfoSuccess, 403: BasicInfoError})
+def update_basic_info_profile_picture(request, user_id: int, image: UploadedFile = File(...)):
+    try:
+        basic_info = BasicInfo.objects.get(user_id=user_id)
+    except BasicInfo.DoesNotExist:
+        return 403, {"message": "Basic Info Does Not Exist."}
+    basic_info.profile_picture = image
+    basic_info.save()
+    return 200, {"success": True}
+
+
+# RU for basic info school year
+@survey_router.get("/retrieve-basic-info-school-year/{user_id}",
+                   response={200: BasicInfoSchoolYearSchema, 403: BasicInfoError})
+def retrieve_basic_info_school_year(request, user_id: int):
+    return get_basic_info_with_code(user_id)
+
+
+@survey_router.put("/update-basic-info-school-year/{user_id}", response={200: BasicInfoSuccess, 403: BasicInfoError})
+def update_basic_info_school_year(request, user_id: int, payload: BasicInfoSchoolYearSchema):
+    try:
+        basic_info = BasicInfo.objects.get(user_id=user_id)
+    except BasicInfo.DoesNotExist:
+        return 403, {"message": "Basic Info Does Not Exist."}
+    basic_info.school_year = payload.school_year
+    basic_info.save()
+    return 200, {"success": True}
+
+
+# RU for basic info rent
+@survey_router.get("/retrieve-basic-info-rent/{user_id}", response={200: BasicInfoRentSchema, 403: BasicInfoError})
+def retrieve_basic_info_rent(request, user_id: int):
+    return get_basic_info_with_code(user_id)
+
+
+@survey_router.put("/update-basic-info-rent/{user_id}", response={200: BasicInfoSuccess, 403: BasicInfoError})
+def update_basic_info_rent(request, user_id: int, payload: BasicInfoRentSchema):
+    try:
+        basic_info = BasicInfo.objects.get(user_id=user_id)
+    except BasicInfo.DoesNotExist:
+        return 403, {"message": "Basic Info Does Not Exist."}
+    basic_info.rent = payload.rent
+    basic_info.save()
+    return 200, {"success": True}
+
+
+# RU for basic info move in date
+@survey_router.get("/retrieve-basic-info-move-in-date/{user_id}",
+                   response={200: BasicInfoMoveInDateSchema, 403: BasicInfoError})
+def retrieve_basic_info_move_in_date(request, user_id: int):
+    return get_basic_info_with_code(user_id)
+
+
+@survey_router.put("/update-basic-info-move-in-date/{user_id}", response={200: BasicInfoSuccess, 403: BasicInfoError})
+def update_basic_info_move_in_date(request, user_id: int, payload: BasicInfoMoveInDateSchema):
+    try:
+        basic_info = BasicInfo.objects.get(user_id=user_id)
+    except BasicInfo.DoesNotExist:
+        return 403, {"message": "Basic Info Does Not Exist."}
+    basic_info.move_in_date = payload.move_in_date
+    basic_info.save()
+    return 200, {"success": True}
+
+
+# RU for basic info number of room
+@survey_router.get("/retrieve-basic-info-number-of-room/{user_id}",
+                   response={200: BasicInfoNumberOfRoomSchema, 403: BasicInfoError})
+def retrieve_basic_info_number_of_room(request, user_id: int):
+    return get_basic_info_with_code(user_id)
+
+
+@survey_router.put("/update-basic-info-number-of-room/{user_id}", response={200: BasicInfoSuccess, 403: BasicInfoError})
+def update_basic_info_number_of_room(request, user_id: int, payload: BasicInfoNumberOfRoomSchema):
+    try:
+        basic_info = BasicInfo.objects.get(user_id=user_id)
+    except BasicInfo.DoesNotExist:
+        return 403, {"message": "Basic Info Does Not Exist."}
+    basic_info.number_of_room = payload.number_of_room
+    basic_info.save()
+    return 200, {"success": True}
+
+
+# RU for basic info location
+@survey_router.get("/retrieve-basic-info-location/{user_id}",
+                   response={200: BasicInfoLocationSchema, 403: BasicInfoError})
+def retrieve_basic_info_location(request, user_id: int):
+    return get_basic_info_with_code(user_id)
+
+
+@survey_router.put("/update-basic-info-location/{user_id}", response={200: BasicInfoSuccess, 403: BasicInfoError})
+def update_basic_info_location(request, user_id: int, payload: BasicInfoLocationSchema):
+    try:
+        basic_info = BasicInfo.objects.get(user_id=user_id)
+    except BasicInfo.DoesNotExist:
+        return 403, {"message": "Basic Info Does Not Exist."}
+    basic_info.location = payload.location
+    basic_info.save()
+    return 200, {"success": True}
+
+
 # RU for survey getup time
 @survey_router.get("/retrieve-survey-getup-time/{user_id}", response={200: SurveyGetupTimeSchema, 403: SurveyError})
 def retrieve_survey_getup_time(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.getup_time
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-getup-time/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -126,11 +300,7 @@ def update_survey_getup_time(request, user_id: int, payload: SurveyGetupTimeSche
 # RU for survey getup time weight
 @survey_router.get("/retrieve-survey-getup-time-w/{user_id}", response={200: SurveyGetupTimeWSchema, 403: SurveyError})
 def retrieve_survey_getup_time_w(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.getup_time_w
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-getup-time-w/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -147,11 +317,7 @@ def update_survey_getup_time_w(request, user_id: int, payload: SurveyGetupTimeWS
 # RU for survey bed time
 @survey_router.get("/retrieve-survey-bed-time/{user_id}", response={200: SurveyBedTimeSchema, 403: SurveyError})
 def retrieve_survey_bed_time(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.bed_time
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-bed-time/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -168,11 +334,7 @@ def update_survey_bed_time(request, user_id: int, payload: SurveyBedTimeSchema):
 # RU for survey bed time weight
 @survey_router.get("/retrieve-survey-bed-time-w/{user_id}", response={200: SurveyBedTimeWSchema, 403: SurveyError})
 def retrieve_survey_bed_time_w(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.bed_time_w
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-bed-time-w/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -186,15 +348,10 @@ def update_survey_bed_time_w(request, user_id: int, payload: SurveyBedTimeWSchem
     return 200, {"success": True}
 
 
-
 # RU for survey social
 @survey_router.get("/retrieve-survey-social/{user_id}", response={200: SurveySocialSchema, 403: SurveyError})
 def retrieve_survey_social(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.social
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-social/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -211,11 +368,7 @@ def update_survey_social(request, user_id: int, payload: SurveySocialSchema):
 # RU for survey social weight
 @survey_router.get("/retrieve-survey-social-w/{user_id}", response={200: SurveySocialWSchema, 403: SurveyError})
 def retrieve_survey_social_w(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.social_w
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-social-w/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -229,15 +382,10 @@ def update_survey_social_w(request, user_id: int, payload: SurveySocialWSchema):
     return 200, {"success": True}
 
 
-
 # RU for survey social
 @survey_router.get("/retrieve-survey-academic/{user_id}", response={200: SurveyAcademicSchema, 403: SurveyError})
 def retrieve_survey_academic(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.academic
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-academic/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -254,11 +402,7 @@ def update_survey_academic(request, user_id: int, payload: SurveyAcademicSchema)
 # RU for survey academic weight
 @survey_router.get("/retrieve-survey-academic-w/{user_id}", response={200: SurveyAcademicWSchema, 403: SurveyError})
 def retrieve_survey_academic_w(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.academic_w
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-academic-w/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -275,11 +419,7 @@ def update_survey_academic_w(request, user_id: int, payload: SurveyAcademicWSche
 # RU for survey bring_people
 @survey_router.get("/retrieve-survey-bring-people/{user_id}", response={200: SurveyBringPeopleSchema, 403: SurveyError})
 def retrieve_survey_bring_people(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.bring_people
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-bring-people/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -294,13 +434,10 @@ def update_survey_bring_people(request, user_id: int, payload: SurveyBringPeople
 
 
 # RU for survey bring_people weight
-@survey_router.get("/retrieve-survey-bring-people-w/{user_id}", response={200: SurveyBringPeopleWSchema, 403: SurveyError})
+@survey_router.get("/retrieve-survey-bring-people-w/{user_id}",
+                   response={200: SurveyBringPeopleWSchema, 403: SurveyError})
 def retrieve_survey_bring_people_w(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.bring_people_w
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-bring-people-w/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -317,11 +454,7 @@ def update_survey_bring_people_w(request, user_id: int, payload: SurveyBringPeop
 # RU for survey animal
 @survey_router.get("/retrieve-survey-animal/{user_id}", response={200: SurveyAnimalSchema, 403: SurveyError})
 def retrieve_survey_animal(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.animal
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-animal/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -338,11 +471,7 @@ def update_survey_animal(request, user_id: int, payload: SurveyAnimalSchema):
 # RU for survey animal weight
 @survey_router.get("/retrieve-survey-animal-w/{user_id}", response={200: SurveyAnimalWSchema, 403: SurveyError})
 def retrieve_survey_animal_w(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.animal_w
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-animal-w/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -359,11 +488,7 @@ def update_survey_animal_w(request, user_id: int, payload: SurveyAnimalWSchema):
 # RU for survey instrument
 @survey_router.get("/retrieve-survey-instrument/{user_id}", response={200: SurveyInstrumentSchema, 403: SurveyError})
 def retrieve_survey_instrument(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.instrument
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-instrument/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -380,11 +505,7 @@ def update_survey_instrument(request, user_id: int, payload: SurveyInstrumentSch
 # RU for survey instrument weight
 @survey_router.get("/retrieve-survey-instrument-w/{user_id}", response={200: SurveyInstrumentWSchema, 403: SurveyError})
 def retrieve_survey_instrument_w(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.instrument_w
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-instrument-w/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -401,11 +522,7 @@ def update_survey_instrument_w(request, user_id: int, payload: SurveyInstrumentW
 # RU for survey cleaning
 @survey_router.get("/retrieve-survey-cleaning/{user_id}", response={200: SurveyCleaningSchema, 403: SurveyError})
 def retrieve_survey_cleaning(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.cleaning
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-cleaning/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -422,11 +539,7 @@ def update_survey_cleaning(request, user_id: int, payload: SurveyCleaningSchema)
 # RU for survey cleaning weight
 @survey_router.get("/retrieve-survey-cleaning-w/{user_id}", response={200: SurveyCleaningWSchema, 403: SurveyError})
 def retrieve_survey_cleaning_w(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.cleaning_w
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-cleaning-w/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -443,11 +556,7 @@ def update_survey_cleaning_w(request, user_id: int, payload: SurveyCleaningWSche
 # RU for survey cook
 @survey_router.get("/retrieve-survey-cook/{user_id}", response={200: SurveyCookSchema, 403: SurveyError})
 def retrieve_survey_cook(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.cook
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-cook/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -464,11 +573,7 @@ def update_survey_cook(request, user_id: int, payload: SurveyCookSchema):
 # RU for survey cleaning weight
 @survey_router.get("/retrieve-survey-cook-w/{user_id}", response={200: SurveyCookWSchema, 403: SurveyError})
 def retrieve_survey_cook_w(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.cook_w
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-cook-w/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -482,16 +587,10 @@ def update_survey_cook_w(request, user_id: int, payload: SurveyCookWSchema):
     return 200, {"success": True}
 
 
-
-
 # RU for survey share
 @survey_router.get("/retrieve-survey-share/{user_id}", response={200: SurveyShareSchema, 403: SurveyError})
 def retrieve_survey_share(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.share
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-share/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -508,11 +607,7 @@ def update_survey_share(request, user_id: int, payload: SurveyShareSchema):
 # RU for survey share weight
 @survey_router.get("/retrieve-survey-share-w/{user_id}", response={200: SurveyShareWSchema, 403: SurveyError})
 def retrieve_survey_share_w(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.share_w
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-share-w/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -529,11 +624,7 @@ def update_survey_share_w(request, user_id: int, payload: SurveyShareWSchema):
 # RU for survey smoke
 @survey_router.get("/retrieve-survey-smoke/{user_id}", response={200: SurveySmokeSchema, 403: SurveyError})
 def retrieve_survey_smoke(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.smoke
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-smoke/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -550,11 +641,7 @@ def update_survey_smoke(request, user_id: int, payload: SurveySmokeSchema):
 # RU for survey smoke weight
 @survey_router.get("/retrieve-survey-smoke-w/{user_id}", response={200: SurveySmokeWSchema, 403: SurveyError})
 def retrieve_survey_smoke_w(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.smoke_w
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-smoke-w/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -571,11 +658,7 @@ def update_survey_smoke_w(request, user_id: int, payload: SurveySmokeWSchema):
 # RU for survey alcohol
 @survey_router.get("/retrieve-survey-alcohol/{user_id}", response={200: SurveyAlcoholSchema, 403: SurveyError})
 def retrieve_survey_alcohol(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.alcohol
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-alcohol/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -592,11 +675,7 @@ def update_survey_alcohol(request, user_id: int, payload: SurveyAlcoholSchema):
 # RU for survey alcohol weight
 @survey_router.get("/retrieve-survey-alcohol-w/{user_id}", response={200: SurveyAlcoholWSchema, 403: SurveyError})
 def retrieve_survey_alcohol_w(request, user_id: int):
-    try:
-        survey = Survey.objects.get(user_id=user_id)
-    except Survey.DoesNotExist:
-        return 403, {"message": "Survey Does Not Exist."}
-    return survey.alcohol_w
+    return get_survey_with_code(user_id)
 
 
 @survey_router.put("/update-survey-alcohol-w/{user_id}", response={200: SurveySuccess, 403: SurveyError})
@@ -608,5 +687,3 @@ def update_survey_alcohol_w(request, user_id: int, payload: SurveyAlcoholWSchema
     survey.alcohol_w = payload.alcohol_w
     survey.save()
     return 200, {"success": True}
-
-
