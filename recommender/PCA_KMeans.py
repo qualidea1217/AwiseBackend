@@ -24,7 +24,8 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "AwiseBackend.settings")
 
 
 def get_cluster(userData: list, userWeight: list, userID: int):
-    nparray = [np.multiply(userData[:,1:][i], userWeight[i]) for i in range(len(userData))]
+    newUserData = userData[:,1:]
+    nparray = [np.multiply(newUserData[i], userWeight[i]) for i in range(len(userData))]
     numDf = pd.DataFrame(nparray)
 
     # ******* PCA ***********
