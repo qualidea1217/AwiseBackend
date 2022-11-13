@@ -1,10 +1,12 @@
-from ninja import Router
-import numpy as np
+from typing import Any
 
-from survey.models import Survey
-from recommender.schema import MatchResultSchema, MatchError
-from recommender.baseline import get_match_score, get_top_3_field
+import numpy as np
+from ninja import Router
+
 from recommender.PCA_KMeans import get_cluster
+from recommender.baseline import get_match_score, get_top_3_field
+from recommender.schema import MatchResultSchema, MatchError
+from survey.models import Survey
 
 recommender_router = Router()
 
@@ -41,6 +43,23 @@ def get_data_array_with_id(user_object):
     return np.array(user_data), np.array(user_data_weight)
 
 
+def format_match_result(match_result_list: list[dict[str, Any]]) -> dict[str, list[Any]]:
+    """
+    Sort match result in descending order according to match score and provide dict matched with the output schema.
+    :param match_result_list: list of dicts containing match result for each pair of matching
+    :return: dict of 5 list match with the format of the output schema.
+    """
+    match_result_list.sort(key=lambda x: x["match_score"], reverse=True)
+    output = {
+        "user_id_list": [match_result["user_id"] for match_result in match_result_list],
+        "match_score_list": [match_result["match_score"] for match_result in match_result_list],
+        "first_match_field_list": [match_result["first_match_field"] for match_result in match_result_list],
+        "second_match_field_list": [match_result["second_match_field"] for match_result in match_result_list],
+        "third_match_field_list": [match_result["third_match_field"] for match_result in match_result_list],
+    }
+    return output
+
+
 @recommender_router.get("/retrieve-match-result-base/{user_id}", response={200: MatchResultSchema, 403: MatchError})
 def retrieve_match_result_base(request, user_id: int):
     current_user_survey = Survey.objects.get(user_id=user_id)  # get object of current user survey
@@ -64,14 +83,7 @@ def retrieve_match_result_base(request, user_id: int):
             "third_match_field": top_3_field[2]
         })
     #  sort in descending order based on match score
-    match_result_list.sort(key=lambda x: x["match_score"], reverse=True)
-    output = {
-        "user_id_list": [match_result["user_id"] for match_result in match_result_list],
-        "match_score_list": [match_result["match_score"] for match_result in match_result_list],
-        "first_match_field_list": [match_result["first_match_field"] for match_result in match_result_list],
-        "second_match_field_list": [match_result["second_match_field"] for match_result in match_result_list],
-        "third_match_field_list": [match_result["third_match_field"] for match_result in match_result_list],
-    }
+    output = format_match_result(match_result_list)
     return output
 
 
@@ -104,14 +116,7 @@ def retrieve_match_result_cluster(request, user_id: int):
                 "second_match_field": top_3_field[1],
                 "third_match_field": top_3_field[2]
             })
-    match_result_list.sort(key=lambda x: x["match_score"], reverse=True)
-    output = {
-        "user_id_list": [match_result["user_id"] for match_result in match_result_list],
-        "match_score_list": [match_result["match_score"] for match_result in match_result_list],
-        "first_match_field_list": [match_result["first_match_field"] for match_result in match_result_list],
-        "second_match_field_list": [match_result["second_match_field"] for match_result in match_result_list],
-        "third_match_field_list": [match_result["third_match_field"] for match_result in match_result_list],
-    }
+    output = format_match_result(match_result_list)
     return output
 
 
