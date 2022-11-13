@@ -17,6 +17,7 @@ import sklearn.metrics
 import sqlite3
 import timeit
 import django
+import random
 
 import os
 
@@ -24,9 +25,15 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "AwiseBackend.settings")
 
 
 def get_cluster(userData: list, userWeight: list, userID: int):
+    
+    random.seed(123)
+    tempList = np.array(userData)
 
     nparray = [np.multiply(userData[i][1:], userWeight[i]) for i in range(len(userData))]
     numDf = pd.DataFrame(nparray)
+    print(userData[0][:])
+    numDf.insert(0,'user_id',tempList[:,0])
+    
 
     # ******* PCA ***********
     normData = StandardScaler().fit_transform(numDf)
@@ -50,8 +57,11 @@ def get_cluster(userData: list, userWeight: list, userID: int):
         calinskiScore.append(sklearn.metrics.calinski_harabasz_score(score, labels))
 
     KM = sklearn.cluster.KMeans(n_clusters=np.argmax(calinskiScore) + 2, random_state=0).fit(score)
-
-    userIDX = numDf.loc[numDf[:0] == userID] 
+    
+    
+    print(numDf)
+    
+    userIDX = int(numDf.loc[numDf['user_id'] == userID].index[0])
 
     # Find the score
     eucDist = []
@@ -65,6 +75,9 @@ def get_cluster(userData: list, userWeight: list, userID: int):
     # Find group
     userGroup = KM.labels_[userIDX]
     groupOut = [i for i, x in enumerate(KM.labels_) if x == userGroup]
+    
+    print(groupOut)
+    print(len(groupOut))
 
     return matchScoreOut, groupOut
 
