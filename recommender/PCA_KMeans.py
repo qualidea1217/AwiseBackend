@@ -14,9 +14,6 @@ from sklearn.preprocessing import minmax_scale
 import sklearn.cluster
 import sklearn.metrics
 
-import sqlite3
-import timeit
-import django
 import random
 
 import os
