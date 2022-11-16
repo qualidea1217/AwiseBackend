@@ -49,7 +49,7 @@ def format_match_result(match_result_list: list[dict[str, Any]]) -> dict[str, li
     :param match_result_list: list of dicts containing match result for each pair of matching
     :return: dict of 5 list match with the format of the output schema.
     """
-    match_result_list.sort(key=lambda x: x["match_score"], reverse=True)
+    match_result_list.sort(key=lambda x: x["match_score"])
     output = {
         "user_id_list": [match_result["user_id"] for match_result in match_result_list],
         "match_score_list": [match_result["match_score"] for match_result in match_result_list],
