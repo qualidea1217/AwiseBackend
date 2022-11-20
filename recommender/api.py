@@ -3,6 +3,8 @@ from typing import Any
 import numpy as np
 from ninja import Router
 
+from viztracer import VizTracer
+
 from recommender.PCA_KMeans import get_cluster
 from recommender.baseline import get_match_score, get_top_3_field
 from recommender.schema import MatchResultSchema, MatchError
@@ -62,6 +64,8 @@ def format_match_result(match_result_list: list[dict[str, Any]]) -> dict[str, li
 
 @recommender_router.get("/retrieve-match-result-base/{user_id}", response={200: MatchResultSchema, 403: MatchError})
 def retrieve_match_result_base(request, user_id: int):
+    # tracer = VizTracer()
+    # tracer.start()
     current_user_survey = Survey.objects.get(user_id=user_id)  # get object of current user survey
     other_user_survey_query = Survey.objects.exclude(user_id=user_id)  # get queryset of objects of other users survey
     other_user_survey_list = list(other_user_survey_query)  # convert queryset to list
@@ -84,11 +88,15 @@ def retrieve_match_result_base(request, user_id: int):
         })
     #  sort in descending order based on match score
     output = format_match_result(match_result_list)
+    # tracer.stop()
+    # tracer.save("base.html")
     return output
 
 
 @recommender_router.get("/retrieve-match-result-cluster/{user_id}", response={200: MatchResultSchema, 403: MatchError})
 def retrieve_match_result_cluster(request, user_id: int):
+    # tracer = VizTracer()
+    # tracer.start()
     current_user_survey = Survey.objects.get(user_id=user_id)  # get object of current user survey
     # get data and weight of the current user in numpy array
     current_user_data, current_user_weight = get_data_array(current_user_survey)
@@ -117,6 +125,8 @@ def retrieve_match_result_cluster(request, user_id: int):
                 "third_match_field": top_3_field[2]
             })
     output = format_match_result(match_result_list)
+    # tracer.stop()
+    # tracer.save("cluster.html")
     return output
 
 
