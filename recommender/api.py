@@ -13,6 +13,18 @@ from survey.models import Survey
 recommender_router = Router()
 
 
+def parse_time(time: int):
+    """
+    Change time pull out from the database to form that can be directly computed
+    :param time: int range from 0 to 2359
+    :return: int range from -1200 to 1159
+    """
+    if time > 1159:
+        return time - 2400
+    else:
+        return time
+
+
 def get_data_array(user_object):
     """
     Get survey data and weight in two numpy arrays
@@ -26,6 +38,8 @@ def get_data_array(user_object):
                         user_object.bring_people_w, user_object.animal_w, user_object.instrument_w,
                         user_object.cleaning_w, user_object.cook_w, user_object.share_w, user_object.smoke_w,
                         user_object.alcohol_w]
+    user_data[0] = parse_time(user_data[0])
+    user_data[1] = parse_time(user_data[1])
     return np.array(user_data), np.array(user_data_weight)
 
 
@@ -42,6 +56,8 @@ def get_data_array_with_id(user_object):
                         user_object.bring_people_w, user_object.animal_w, user_object.instrument_w,
                         user_object.cleaning_w, user_object.cook_w, user_object.share_w, user_object.smoke_w,
                         user_object.alcohol_w]
+    user_data[0] = parse_time(user_data[0])
+    user_data[1] = parse_time(user_data[1])
     return np.array(user_data), np.array(user_data_weight)
 
 
