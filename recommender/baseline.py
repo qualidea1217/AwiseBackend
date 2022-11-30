@@ -69,15 +69,16 @@ def get_match_score(user1: ndarray, weight1: ndarray, user2: ndarray, weight2: n
     """
     processed_user1 = None
     processed_user2 = None
+    weighted_data1 = weight_data(user1, weight1)
+    weighted_data2 = weight_data(user2, weight2)
     if preprocess == "normalize":
-        processed_user1 = normalize(user1)
-        processed_user2 = normalize(user2)
+        processed_user1 = normalize(weighted_data1)
+        processed_user2 = normalize(weighted_data2)
     elif preprocess == "standardize":
-        processed_user1 = standardize(user1)
-        processed_user2 = standardize(user2)
-    weighted_data1 = weight_data(processed_user1, weight1)
-    weighted_data2 = weight_data(processed_user2, weight2)
-    return match_score(weighted_data1, weighted_data2)
+        processed_user1 = standardize(weighted_data1)
+        processed_user2 = standardize(weighted_data2)
+    output = match_score(processed_user1, processed_user2)
+    return output
 
 
 def get_num_similarity(num1: int | float, num2: int | float) -> float:

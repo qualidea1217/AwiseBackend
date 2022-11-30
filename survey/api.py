@@ -1,3 +1,5 @@
+import os
+
 from ninja import Router, File
 from ninja.files import UploadedFile
 
@@ -175,19 +177,33 @@ def update_basic_info_gender(request, user_id: int, payload: BasicInfoGenderSche
 
 
 # RU for basic info profile picture
-@survey_router.get("/retrieve-basic-info-profile-picture/{user_id}", response={200: BasicInfoProfilePictureSchema, 403: BasicInfoError})
-def retrieve_basic_info_profile_picture(request, user_id: int):
-    return get_basic_info_with_code(user_id)
-
-
-@survey_router.put("/update-basic-info-profile-picture/{user_id}", response={200: BasicInfoSuccess, 403: BasicInfoError})
-def update_basic_info_profile_picture(request, user_id: int, image: UploadedFile = File(...)):
+@survey_router.get("/retrieve-profile-picture/{user_id}", response={200: ProfilePictureSchema, 403: BasicInfoError})
+def retrieve_profile_picture(request, user_id: int):
     try:
         basic_info = BasicInfo.objects.get(user_id=user_id)
     except BasicInfo.DoesNotExist:
         return 403, {"message": "Basic Info Does Not Exist."}
-    basic_info.profile_picture = image
-    basic_info.save()
+    try:
+        profile_picture = ProfilePicture.objects.get(basic_info_id=basic_info.user_id)
+    except ProfilePicture.DoesNotExist:
+        return 403, {"message": "Profile Picture Does Not Exist."}
+    return profile_picture
+
+
+@survey_router.post("/create-profile-picture/{user_id}", response={200: BasicInfoSuccess, 403: BasicInfoError})
+def update_profile_picture(request, user_id: int, image: UploadedFile = File(...)):
+    try:
+        basic_info = BasicInfo.objects.get(user_id=user_id)
+    except BasicInfo.DoesNotExist:
+        return 403, {"message": "Basic Info Does Not Exist."}
+    try:
+        profile_picture = ProfilePicture.objects.get(basic_info_id=basic_info.user_id)
+    except ProfilePicture.DoesNotExist:
+        ProfilePicture.objects.create(basic_info=basic_info, profile_picture=image)
+    else:
+        os.remove(profile_picture.profile_picture.path)
+        profile_picture.delete()
+        ProfilePicture.objects.create(basic_info=basic_info, profile_picture=image)
     return 200, {"success": True}
 
 

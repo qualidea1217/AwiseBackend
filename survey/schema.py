@@ -1,11 +1,11 @@
 from ninja import Schema, ModelSchema
-from survey.models import BasicInfo, Survey
+from survey.models import BasicInfo, ProfilePicture, Survey
 
 
 class BasicInfoSchema(ModelSchema):
     class Config:
         model = BasicInfo
-        model_fields = ["user_id", "user_name", "email", "password", "gender", "profile_picture", "school_year", "rent",
+        model_fields = ["user_id", "user_name", "email", "password", "gender", "school_year", "rent",
                         "move_in_date", "number_of_room", "location"]
 
 
@@ -25,7 +25,7 @@ class BasicInfoGenderSchema(Schema):
     gender: str
 
 
-class BasicInfoProfilePictureSchema(Schema):
+class ProfilePictureSchema(Schema):
     profile_picture: str
 
 
