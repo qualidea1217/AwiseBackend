@@ -8,7 +8,7 @@ from viztracer import VizTracer
 from recommender.PCA_KMeans import get_cluster
 from recommender.baseline import get_match_score, get_top_3_field
 from recommender.schema import MatchResultSchema, MatchError
-from survey.models import Survey
+from survey.models import BasicInfo, Survey
 
 recommender_router = Router()
 
@@ -70,6 +70,7 @@ def format_match_result(match_result_list: list[dict[str, Any]]) -> dict[str, li
     match_result_list.sort(key=lambda x: x["match_score"])
     output = {
         "user_id_list": [match_result["user_id"] for match_result in match_result_list],
+        "user_email_list": [match_result["user_email"] for match_result in match_result_list],
         "match_score_list": [match_result["match_score"] for match_result in match_result_list],
         "first_match_field_list": [match_result["first_match_field"] for match_result in match_result_list],
         "second_match_field_list": [match_result["second_match_field"] for match_result in match_result_list],
@@ -97,6 +98,7 @@ def retrieve_match_result_base(request, user_id: int):
         top_3_field = get_top_3_field(current_user_data, other_user_data)
         match_result_list.append({
             "user_id": other_user_survey.user_id,
+            "user_email": BasicInfo.objects.get(other_user_survey.user_id).email,
             "match_score": match_score_base,
             "first_match_field": top_3_field[0],
             "second_match_field": top_3_field[1],
@@ -135,6 +137,7 @@ def retrieve_match_result_cluster(request, user_id: int):
             top_3_field = get_top_3_field(current_user_data, np.delete(all_user_data_list[index], 0))
             match_result_list.append({
                 "user_id": all_user_data_list[index][0],
+                "user_email": BasicInfo.objects.get(all_user_data_list[index][0]).email,
                 "match_score": match_score_list[index],
                 "first_match_field": top_3_field[0],
                 "second_match_field": top_3_field[1],
