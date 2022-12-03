@@ -53,11 +53,11 @@ def get_cluster(userData: list, userWeight: list, userID: int):
 
     KM = sklearn.cluster.KMeans(n_clusters=np.argmax(calinskiScore) + 2, random_state=0).fit(score)
 
-    print(numDf)
+    #print(numDf)
 
     userIDX = int(numDf.loc[numDf['user_id'] == userID].index[0])
 
-    # Find the score
+    #Find the score
     eucDist = []
     for i in range(0, len(score) - 1):
         if i == userIDX:
@@ -70,8 +70,8 @@ def get_cluster(userData: list, userWeight: list, userID: int):
     userGroup = KM.labels_[userIDX]
     groupOut = [i for i, x in enumerate(KM.labels_) if x == userGroup]
 
-    print(groupOut)
-    print(len(groupOut))
+    #print(groupOut)
+    #print(len(groupOut))
 
     return matchScoreOut, groupOut
 

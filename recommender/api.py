@@ -92,6 +92,10 @@ def retrieve_match_result_base(request, user_id: int):
     for other_user_survey in other_user_survey_list:
         # get data and weight of the other user in numpy array
         other_user_data, other_user_weight = get_data_array(other_user_survey)
+        
+        if(-1 in other_user_data and -1 in other_user_weight): #Excludes unfinished surveys
+            continue
+        
         match_score_base = get_match_score(current_user_data, current_user_weight, other_user_data,
                                            other_user_weight)  # calculate match score with baseline
         top_3_field = get_top_3_field(current_user_data, other_user_data)
@@ -123,6 +127,10 @@ def retrieve_match_result_cluster(request, user_id: int):
     all_user_weight_list = []
     for survey_obj in all_user_survey_list:
         user_data, user_data_weight = get_data_array_with_id(survey_obj)
+        
+        if(-1 in user_data and -1 in user_data_weight): #Excludes unfinished surveys
+            continue
+        
         all_user_data_list.append(user_data)
         all_user_weight_list.append(user_data_weight)
     match_score_list, cluster_index_list = get_cluster(all_user_data_list, all_user_weight_list, user_id)
