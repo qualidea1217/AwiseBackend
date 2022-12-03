@@ -3,12 +3,26 @@ from typing import Any
 import numpy as np
 from ninja import Router
 
+from viztracer import VizTracer
+
 from recommender.PCA_KMeans import get_cluster
 from recommender.baseline import get_match_score, get_top_3_field
 from recommender.schema import MatchResultSchema, MatchError
 from survey.models import Survey
 
 recommender_router = Router()
+
+
+def parse_time(time: int):
+    """
+    Change time pull out from the database to form that can be directly computed
+    :param time: int range from 0 to 2359
+    :return: int range from -1200 to 1159
+    """
+    if time > 1159:
+        return time - 2400
+    else:
+        return time
 
 
 def get_data_array(user_object):
@@ -24,6 +38,8 @@ def get_data_array(user_object):
                         user_object.bring_people_w, user_object.animal_w, user_object.instrument_w,
                         user_object.cleaning_w, user_object.cook_w, user_object.share_w, user_object.smoke_w,
                         user_object.alcohol_w]
+    user_data[0] = parse_time(user_data[0])
+    user_data[1] = parse_time(user_data[1])
     return np.array(user_data), np.array(user_data_weight)
 
 
@@ -40,6 +56,8 @@ def get_data_array_with_id(user_object):
                         user_object.bring_people_w, user_object.animal_w, user_object.instrument_w,
                         user_object.cleaning_w, user_object.cook_w, user_object.share_w, user_object.smoke_w,
                         user_object.alcohol_w]
+    user_data[0] = parse_time(user_data[0])
+    user_data[1] = parse_time(user_data[1])
     return np.array(user_data), np.array(user_data_weight)
 
 
@@ -49,7 +67,7 @@ def format_match_result(match_result_list: list[dict[str, Any]]) -> dict[str, li
     :param match_result_list: list of dicts containing match result for each pair of matching
     :return: dict of 5 list match with the format of the output schema.
     """
-    match_result_list.sort(key=lambda x: x["match_score"], reverse=True)
+    match_result_list.sort(key=lambda x: x["match_score"])
     output = {
         "user_id_list": [match_result["user_id"] for match_result in match_result_list],
         "match_score_list": [match_result["match_score"] for match_result in match_result_list],
@@ -62,6 +80,8 @@ def format_match_result(match_result_list: list[dict[str, Any]]) -> dict[str, li
 
 @recommender_router.get("/retrieve-match-result-base/{user_id}", response={200: MatchResultSchema, 403: MatchError})
 def retrieve_match_result_base(request, user_id: int):
+    # tracer = VizTracer()
+    # tracer.start()
     current_user_survey = Survey.objects.get(user_id=user_id)  # get object of current user survey
     other_user_survey_query = Survey.objects.exclude(user_id=user_id)  # get queryset of objects of other users survey
     other_user_survey_list = list(other_user_survey_query)  # convert queryset to list
@@ -84,11 +104,15 @@ def retrieve_match_result_base(request, user_id: int):
         })
     #  sort in descending order based on match score
     output = format_match_result(match_result_list)
+    # tracer.stop()
+    # tracer.save("base.html")
     return output
 
 
 @recommender_router.get("/retrieve-match-result-cluster/{user_id}", response={200: MatchResultSchema, 403: MatchError})
 def retrieve_match_result_cluster(request, user_id: int):
+    # tracer = VizTracer()
+    # tracer.start()
     current_user_survey = Survey.objects.get(user_id=user_id)  # get object of current user survey
     # get data and weight of the current user in numpy array
     current_user_data, current_user_weight = get_data_array(current_user_survey)
@@ -117,6 +141,8 @@ def retrieve_match_result_cluster(request, user_id: int):
                 "third_match_field": top_3_field[2]
             })
     output = format_match_result(match_result_list)
+    # tracer.stop()
+    # tracer.save("cluster.html")
     return output
 
 
