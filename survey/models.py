@@ -23,7 +23,7 @@ class BasicInfo(models.Model):
 
 
 class ProfilePicture(models.Model):
-    basic_info = models.OneToOneField(BasicInfo, on_delete=models.PROTECT, related_name="profile_picture", primary_key=True)
+    basic_info = models.OneToOneField(BasicInfo, on_delete=models.CASCADE, related_name="profile_picture", primary_key=True)
     profile_picture = models.ImageField(upload_to="profile_picture/")
 
 
