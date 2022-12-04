@@ -98,7 +98,7 @@ def retrieve_match_result_base(request, user_id: int):
         top_3_field = get_top_3_field(current_user_data, other_user_data)
         match_result_list.append({
             "user_id": other_user_survey.user_id,
-            "user_email": BasicInfo.objects.get(other_user_survey.user_id).email,
+            "user_email": BasicInfo.objects.get(user_id=other_user_survey.user_id).email,
             "match_score": match_score_base,
             "first_match_field": top_3_field[0],
             "second_match_field": top_3_field[1],
@@ -137,7 +137,7 @@ def retrieve_match_result_cluster(request, user_id: int):
             top_3_field = get_top_3_field(current_user_data, np.delete(all_user_data_list[index], 0))
             match_result_list.append({
                 "user_id": all_user_data_list[index][0],
-                "user_email": BasicInfo.objects.get(all_user_data_list[index][0]).email,
+                "user_email": BasicInfo.objects.get(user_id=all_user_data_list[index][0]).email,
                 "match_score": match_score_list[index],
                 "first_match_field": top_3_field[0],
                 "second_match_field": top_3_field[1],
